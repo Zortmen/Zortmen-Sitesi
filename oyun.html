@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>Zort Game</title>
+  <style>
+    body {
+      margin: 0;
+      background: #111;
+      color: white;
+      font-family: Arial, sans-serif;
+      text-align: center;
+    }
+    canvas {
+      background: #222;
+      display: block;
+      margin: 20px auto;
+      border: 3px solid #555;
+    }
+  </style>
+</head>
+<body>
+
+<h1>💥 ZORT GAME 💥</h1>
+<p>⬅️ ➡️ ile kaç | ZORT'a çarpma</p>
+
+<canvas id="game" width="400" height="500"></canvas>
+
+<script>
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+
+// RESİMLER
+const playerImg = new Image();
+playerImg.src = "data:image/png;base64,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";
+const zortImg = new Image();
+zortImg.src = "https://uploads.onecompiler.io/446ptsdzc/446ptk3qx/zortmen.png"; // kendi foto yolun
+
+let player = {
+  x: 180,
+  y: 450,
+  w: 40,
+  h: 40,
+  speed: 5
+};
+
+let zorts = [];
+let score = 0;
+let gameOver = false;
+
+function spawnZort() {
+  zorts.push({
+    x: Math.random() * (canvas.width - 30),
+    y: -40,
+    w: 30,
+    h: 30,
+    speed: 3 + Math.random() * 3
+  });
+}
+
+setInterval(spawnZort, 800);
+
+let keys = {};
+document.addEventListener("keydown", e => keys[e.key] = true);
+document.addEventListener("keyup", e => keys[e.key] = false);
+
+function update() {
+  if (gameOver) return;
+
+  if (keys["ArrowLeft"] && player.x > 0) player.x -= player.speed;
+  if (keys["ArrowRight"] && player.x < canvas.width - player.w) player.x += player.speed;
+
+  zorts.forEach(z => z.y += z.speed);
+
+  zorts.forEach(z => {
+    if (
+      z.x < player.x + player.w &&
+      z.x + z.w > player.x &&
+      z.y < player.y + player.h &&
+      z.y + z.h > player.y
+    ) {
+      gameOver = true;
+    }
+  });
+
+  zorts = zorts.filter(z => z.y < canvas.height);
+  score++;
+}
+
+function draw() {
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  // player resmi
+  ctx.drawImage(playerImg, player.x, player.y, player.w, player.h);
+
+  // zort resimleri
+  zorts.forEach(z => ctx.drawImage(zortImg, z.x, z.y, z.w, z.h));
+
+  // skor
+  ctx.fillStyle = "white";
+  ctx.font = "20px Arial";
+  ctx.fillText("Skor: " + score, 10, 25);
+
+  if (gameOver) {
+    ctx.fillStyle = "yellow";
+    ctx.font = "40px Arial";
+    ctx.fillText("ZORT!", 130, 250);
+    ctx.font = "20px Arial";
+    ctx.fillText("Sayfayı yenile", 135, 290);
+  }
+}
+
+function loop() {
+  update();
+  draw();
+  requestAnimationFrame(loop);
+}
+
+loop();
+</script>
+
+</body>
+</html>
